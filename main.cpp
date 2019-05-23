@@ -8,7 +8,27 @@
 
 using namespace std;
 
-/* -------------------- FUNCTIONS -----------------------*/
+/*------------------------------- FUNCTIONS ----------------------------------*/
+
+int validInput(int counter){
+  int userInput = 0;
+  bool isValid = false;
+  do
+  {
+      cout << "Enter data to store in array[" << counter << "]: " << endl;
+      cin >> userInput;
+      if (cin.good())
+      {
+          isValid = true;
+      }
+      else
+      {
+          userInput = 0;
+          cout << "ERROR: not a valid integer" << endl;
+      }
+  } while(isValid = true);          //Loops while user input isnt an INT
+  return userInput;
+}
 
 void printMenu(){
   cout << endl;
@@ -34,32 +54,44 @@ void reverseArray(){
 // ANY OTHER FUNCTIONS WISH TO INCLUDE HERE
 
 
-/* ----------------------- Main --------------------------*/
+/*** ----------------------- Main --------------------------***/
 
-int main(){
+int main()
+{
   int myArray[100];
   short arraySize = 0;
   short userChoice = 0;
 
   cout << "Opening Program" << endl;
-  cout << "Enter amount of integers of desired array (max 99): ";
-  cin >> arraySize;
 
-  if (arraySize > 99 || arraySize < 0){
-      cout << "ERROR: Invalid array size." << endl;
-      //Exit program (or create a loop to ask user to input valid size)
-  }
+/****** ASK USER TO ENTER SIZE OF ARRAY, LOOPS TILL VALID SIZE IS ENTER *******/
+  bool validSize = true;
+  do
+  {
+      cout << "Enter amount of integers of desired array (max 99): ";
+      cin >> arraySize;
+      if ( (arraySize > 99) || (arraySize < 0) )
+      {
+          cout << "ERROR: Invalid array size." << endl;
+          validSize = false;
+      }
+  }while (validSize == false);
+  delete validSize;
 
-  cout << "Enter data to fill your array (integers):" << endl;
+/**************** ASK USER TO INPUT INTS INTO ARRAY ***************************/
+
   for(int counter=0; counter < arraySize; counter++){
-      cin >> myArray[counter];
+      myArray[counter] = validInput(counter);
   }
 
+  cout << endl;
   cout << "Inputs saved. Current array: ";
   for (counter = 0; counter < arraySize; counter++){
       cout << myArray[counter] << " ";
   }
   cout << endl;
+
+  /********** PRINT OUT MENU TILL USER DECIDES TO CLOSE PROGRAM ***************/
 
   cout << "What do you wish to do with array?";
 
