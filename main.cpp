@@ -2,7 +2,7 @@
 // Ryan Romero      r.romero.softwaredev@gmail.com
 // DESCRIPTION:
 //
-// NOTE TO SELF: WORK ON ASM / ARRAY FUNCTIONS NEXT TIME
+//    NOTE TO SELF: WORK ON ASM / ARRAY FUNCTIONS NEXT TIME
 
 #include <iostream>
 #include <array>
