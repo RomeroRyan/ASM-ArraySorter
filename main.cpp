@@ -9,6 +9,7 @@
 
 using namespace std;
 
+//------------------------------------------------------------------------------
 /*------------------------------- FUNCTIONS ----------------------------------*/
 
 int validInput(int counter){
@@ -18,7 +19,7 @@ int validInput(int counter){
   {
       cout << "Enter data to store in array[" << counter << "]: " << endl;
       cin >> userInput;
-      if (cin.good())
+      if (cin.good())               //Check if valid integer
       {
           isValid = true;
       }
@@ -27,20 +28,23 @@ int validInput(int counter){
           userInput = 0;
           cout << "ERROR: not a valid integer" << endl;
       }
-  } while(isValid = true);          //Loops while user input isnt an INT
+  } while(isValid == true);          //Loops while user input isnt an integer
   return userInput;
 }
 
 void printMenu(){
   cout << endl;
   cout << "---------- Menu ----------" << endl;
-  // COUT MENU options
+  cout << "1. Sort Array" << endl;
+  cout << "2. Reverse Array" << endl;
+  cout << "3. Set new Array" << endl;
+  cout << "4. End Proogram" << endl;
+  cout << endl;
   cout << "Please enter your choice: ";
 }
-
-
+//------------------------------------------------------
 void sortArray(int myArray[]){
-   __asm( "AssemblyCode"){
+   __asm{
       push  eax       //
       push  ebx       // Saves any info in these regs.
       push  ecx       //
@@ -79,9 +83,9 @@ void sortArray(int myArray[]){
       pop   eax
    };
 }
-
+//--------------------------------------------------------
 void reverseArray(int myArray[]){
-    __asm( "AssemblyCode"){
+    __asm{
         push  eax
         push  ebx
         push  ecx
@@ -106,14 +110,46 @@ void reverseArray(int myArray[]){
         pop   ecx
         pop   ebx
         pop   eax
+    };
+}
+//----------------------------------------------------
+void setArray(int myArray[], short arraySize)
+{
+  /******* ASK USER TO INPUT SIZE OF ARRAY *********/
+    bool validSize = true;
+    do
+    {
+        cout << "Enter amount of integers of desired array (max 99): ";
+        cin >> arraySize;
+        if ( (arraySize > 99) || (arraySize < 0) )
+        {
+            cout << "ERROR: Invalid array size." << endl;
+            validSize = false;
+        }
+        else
+            {validSize = true;}
+
+    }while (validSize == false);
+
+  /******** ASK USER TO INPUT NUMS INTO ARRAY ************/
+
+    for(short counter=0; counter < arraySize; counter++)
+    {
+        myArray[counter] = validInput(counter);
+    }
+    cout << endl;
+    cout << "Inputs saved. Current array: ";
+    for (int counter = 0; counter < arraySize; counter++)
+    {
+        cout << myArray[counter] << " ";
+    }
+    cout << endl;
 }
 
 
-// ANY OTHER FUNCTIONS WISH TO INCLUDE HERE
 
-
-/*** ----------------------- Main --------------------------***/
-
+//-------------------------------------------------------------------------
+/*** ---------------------------- Main ------------------------------- ***/
 int main()
 {
   int myArray[100];
@@ -121,63 +157,41 @@ int main()
   short userChoice = 0;
 
   cout << "Opening Program" << endl;
-
-/****** ASK USER TO ENTER SIZE OF ARRAY, LOOPS TILL VALID SIZE IS ENTER *******/
-  bool validSize = true;
-  do
-  {
-      cout << "Enter amount of integers of desired array (max 99): ";
-      cin >> arraySize;
-      if ( (arraySize > 99) || (arraySize < 0) )
-      {
-          cout << "ERROR: Invalid array size." << endl;
-          validSize = false;
-      }
-  }while (validSize == false);
-
-/**************** ASK USER TO INPUT INTS INTO ARRAY ***************************/
-
-  for(int counter=0; counter < arraySize; counter++){
-      myArray[counter] = validInput(counter);
-  }
-
-  cout << endl;
-  cout << "Inputs saved. Current array: ";
-  for (int counter = 0; counter < arraySize; counter++){
-      cout << myArray[counter] << " ";
-  }
-  cout << endl;
+  setArray(myArray, arraySize);          // sets arrays
 
   /********** PRINT OUT MENU TILL USER DECIDES TO CLOSE PROGRAM ***************/
-
   cout << "What do you wish to do with array?";
-
   do{
-      printMenu();
+      printMenu();                                  // prints menu
       cin >> userChoice;
       switch (userChoice)
       {
-          case 1:
+            case 1:                                 // sorts array
               sortArray(myArray);
-              //***TEST***
-              cout << "Current Array: ";
-              for(int i = 0; i < arraySize; i++)
-                  {cout << myArray[i] << " ";}
               break;
 
           case 2:
-              reverseArray(myArray);
+              reverseArray(myArray);                // reverse array
               break;
 
-          case 9:
-              //do nothin
+          case 3:                                   // resets array, sets array
+              for(short i = 0; i <arraySize; i++)
+              {
+                  myArray[i] = 0;
+              }
+              arraySize = 0;
+              setArray(myArray, arraySize);
               break;
 
-          default:
+          case 4:                                    // quits program
+              // END PROGRAM
+              break;
+
+          default:                                   // default case
       			cout << "Invalid entry." << endl;
       			break;
       		}
-      } while (userChoice != 9);
+      } while (userChoice != 4);
 
       cout << "Exiting Program." << endl;
 return 0;
