@@ -1,8 +1,8 @@
 // Project 1
 // Ryan Romero      r.romero.softwaredev@gmail.com
 // DESCRIPTION:
-//
-//    NOTE TO SELF: WORK ON ASM / ARRAY FUNCTIONS NEXT TIME
+//              This is a program that ask user to input num for an array.
+//  program can sort or reverse array. Functions to do so are writen in ASM
 
 #include <iostream>
 #include <array>
