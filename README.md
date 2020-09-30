@@ -12,3 +12,6 @@ This projects came to be after scoring a great score on on my first ASM assignme
 NOTES:
 - as of now, this code is consider LEGACY CODE: it has been years since I last test this code for errors. C++ compiler having trouble recongnizing ASM code
   - TODO: test code on new/updated C++ compiler for errors
+  
+Working:
+??
