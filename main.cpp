@@ -3,6 +3,7 @@
 // DESCRIPTION:
 //              This is a program that ask user to input num for an array.
 //  program can sort or reverse array. Functions to do so are writen in ASM
+//  the rest is written in C++
 
 #include <iostream>
 #include <array>
@@ -10,8 +11,14 @@
 using namespace std;
 
 //------------------------------------------------------------------------------
-/*------------------------------- FUNCTIONS ----------------------------------*/
+/*--------------------------- SUPPORT FUNCTIONS-------------------------------*/
+//-----------------------------------------------------------------------------
 
+
+
+/*-----------------------------------------------------------------------------
+// validInput: checks if user input is valid. if so, return
+-----------------------------------------------------------------------------*/
 int validInput(int counter){
   int userInput = 0;
   bool isValid = false;
@@ -21,9 +28,9 @@ int validInput(int counter){
       cin >> userInput;
       if (cin.good())               //Check if valid integer
       {
-          isValid = true;
+          isValid = true;           //TRUE: exit loop and returns
       }
-      else
+      else                          //FALSE: ask user to enter valid integer
       {
           userInput = 0;
           cout << "ERROR: not a valid integer" << endl;
@@ -32,6 +39,11 @@ int validInput(int counter){
   return userInput;
 }
 
+
+
+/*---------------------------------------------------------------------------------
+// printMenu: after user inputs array, prints menu
+---------------------------------------------------------------------------------*/
 void printMenu(){
   cout << endl;
   cout << "---------- Menu ----------" << endl;
@@ -42,22 +54,27 @@ void printMenu(){
   cout << endl;
   cout << "Please enter your choice: ";
 }
-//------------------------------------------------------
+
+
+
+/*---------------------------------------------------------------------------------
+//sortArray: ASM code that sorts array
+---------------------------------------------------------------------------------*/
 void sortArray(int myArray[]){
    __asm{
       push  eax       //
-      push  ebx       // Saves any info in these regs.
+      push  ebx       // initialize registers that will be used to sort array
       push  ecx       //
-      push  esi       // regs will be use during the function
+      push  esi       // these regs will be use during the function
       push  edi       //
 
-      mov   ecx, LENGTHOF myArray                 // counter
-      mov   esi, OFFSET myArray                   // ptr to first element in array
+      mov   ecx, LENGTHOF myArray                 // ECX = counter
+      mov   esi, OFFSET myArray                   // ESI = ptr to first element in array
       Loop1:
-          mov   ebx, [esi]                  // saves element x into EBX
-          mov   edi, esi                    // copy ptr to first element to EDI
-          mov   eax, ecx                    // copy counter to EAX
-          push  ecx                         // Saves counte
+          mov   ebx, [esi]                  // saves element into EBX
+          mov   edi, esi                    // EDI = copy ptr to first element
+          mov   eax, ecx                    // EAX = copy counter
+          push  ecx                         // Saves counter
           mov   ecx, eax                    // ECX and EAX = counter
       Loop2:
           add   edi, TYPE myArray           // EDI now points to next element [ x + 1 ]
@@ -68,7 +85,7 @@ void sortArray(int myArray[]){
           sub   eax, TYPE myArray           // counter--
       SkipCode:
           loop  Loop2
-          mov   edi, OFFSET myArray + SIZEOF myArray  //
+          mov   edi, OFFSET myArray + SIZEOF myArray  
           sub   edi, eax
           xchg  [esi], ebx
           mov   [edi], ebx
@@ -76,43 +93,53 @@ void sortArray(int myArray[]){
           pop   ecx
           loop  Loop1
 
-      pop   edi       // Pops all regs that were use
-      pop   esi       //
-      pop   ecx       //
-      pop   ebx
-      pop   eax
+      pop   edi       // 
+      pop   esi       // Pops all regs that were used
+      pop   ecx       // 
+      pop   ebx       // free up reg to be used by other processes
+      pop   eax       //
    };
 }
-//--------------------------------------------------------
+
+
+
+/*---------------------------------------------------------------------------------
+// reverseArray: ASM code to reverse array
+---------------------------------------------------------------------------------*/
 void reverseArray(int myArray[]){
     __asm{
-        push  eax
-        push  ebx
-        push  ecx
-        push  edi
-        push  esi
+        push  eax     //
+        push  ebx     //
+        push  ecx     // initialize registers that will be used to reverse array
+        push  edi     //
+        push  esi     //
 
-        mov   ecx, LENGTHOF myArray / 2    // loop counter
+        mov   ecx, LENGTHOF myArray / 2                             // loop counter
         mov   esi, OFFSET myArray                                   // Ptr to first element
         mov   edi, OFFSET myArray + SIZEOF myArray - TYPE myArray   // Ptr to last element
 
         myLoop:
-            mov   eax, [esi]    //move element to reg
-            mov   ebx, [edi]    //move element to reg
-            mov   [esi], ebx    //swap
-            mov   [edi], eax    //swap
-            add   esi, TYPE myArray   //inc
-            sub   edi, TYPE myArray   //dec
+            mov   eax, [esi]          //move element to reg EAX
+            mov   ebx, [edi]          //move element to reg EBX
+            mov   [esi], ebx          //swap elements
+            mov   [edi], eax          //swap elements
+            add   esi, TYPE myArray   //increment ptr (that started at first element)
+            sub   edi, TYPE myArray   //decrement ptr (that started at last element)
             loop myLoop
 
-        pop   esi
-        pop   edi
-        pop   ecx
-        pop   ebx
-        pop   eax
+        pop   esi     //
+        pop   edi     // Pops all regs that were used
+        pop   ecx     // 
+        pop   ebx     // frees up reg to be used by processes
+        pop   eax     //
     };
 }
-//----------------------------------------------------
+
+
+
+/*--------------------------------------------------------------------------------
+// setArray: gets size of array and values for each index from user
+--------------------------------------------------------------------------------*/
 void setArray(int myArray[], short arraySize)
 {
   /******* ASK USER TO INPUT SIZE OF ARRAY *********/
@@ -121,24 +148,24 @@ void setArray(int myArray[], short arraySize)
     {
         cout << "Enter amount of integers of desired array (max 99): ";
         cin >> arraySize;
-        if ( (arraySize > 99) || (arraySize < 0) )
+        if ( (arraySize > 99) || (arraySize < 0) )          // check if user size is within intialize array size (of 100)
         {
-            cout << "ERROR: Invalid array size." << endl;
+            cout << "ERROR: Invalid array size." << endl;   // FALSE: ask user to enter valid size
             validSize = false;
         }
-        else
+        else                                                // TRUE: exit loop and moves on
             {validSize = true;}
 
     }while (validSize == false);
 
+  
   /******** ASK USER TO INPUT NUMS INTO ARRAY ************/
-
     for(short counter=0; counter < arraySize; counter++)
     {
-        myArray[counter] = validInput(counter);
-    }
+        myArray[counter] = validInput(counter);             // calls function "validInput" where it gets valid num values from user
+    }                                                       //   and fills arrays with said values
     cout << endl;
-    cout << "Inputs saved. Current array: ";
+    cout << "Inputs saved. Current array: ";                // display entire array with the valid inputs user has choose
     for (int counter = 0; counter < arraySize; counter++)
     {
         cout << myArray[counter] << " ";
@@ -148,51 +175,57 @@ void setArray(int myArray[], short arraySize)
 
 
 
-//-------------------------------------------------------------------------
-/*** ---------------------------- Main ------------------------------- ***/
+//------------------------------------------------------------------------------
+/*---------------------------- MAIN FUNCTION ---------------------------------*/
+//-----------------------------------------------------------------------------
 int main()
 {
+  
+  /**** INITIALIZE VARIABLES ****/
   int myArray[100];
   short arraySize = 0;
   short userChoice = 0;
 
+  
+  /**** START PROGRAM ****/
   cout << "Opening Program" << endl;
   setArray(myArray, arraySize);          // sets arrays
 
-  /********** PRINT OUT MENU TILL USER DECIDES TO CLOSE PROGRAM ***************/
+  
+  /**** PRINT OUT MENU ****/
   cout << "What do you wish to do with array?";
   do{
       printMenu();                                  // prints menu
-      cin >> userChoice;
+      cin >> userChoice;                            // get user choice
       switch (userChoice)
       {
-            case 1:                                 // sorts array
-              sortArray(myArray);
+            case 1:                                 // if choice = 1
+              sortArray(myArray);                   // sorts array
               break;
 
-          case 2:
+          case 2:                                   // if choice = 2
               reverseArray(myArray);                // reverse array
               break;
 
-          case 3:                                   // resets array, sets array
-              for(short i = 0; i <arraySize; i++)
+          case 3:                                   // if choice = 3
+              for(short i = 0; i <arraySize; i++)   // resets array
               {
                   myArray[i] = 0;
               }
               arraySize = 0;
-              setArray(myArray, arraySize);
+              setArray(myArray, arraySize);         // sets new values for array   
               break;
 
-          case 4:                                    // quits program
-              // END PROGRAM
+          case 4:                                   // if choice = 4 
+              // END PROGRAM                        // exits the switch cases, (goes to end of main)
               break;
 
-          default:                                   // default case
+          default:                                  // default case
       			cout << "Invalid entry." << endl;
       			break;
       		}
       } while (userChoice != 4);
-
       cout << "Exiting Program." << endl;
+  
 return 0;
 }
